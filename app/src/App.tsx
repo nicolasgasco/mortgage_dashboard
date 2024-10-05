@@ -6,6 +6,7 @@ import {
 } from "./constants/mortgage";
 import { ProgressDonut } from "./components/ProgressDonut";
 import { Tile } from "./components/Tile";
+import { MinusPlusButtons } from "./components/MinusPlusButtons";
 
 const MILLISECONDS_IN_A_MONTH = 1000 * 60 * 60 * 24 * 30.44; // Average month length in milliseconds
 
@@ -23,12 +24,23 @@ function App() {
     return Math.ceil(elapsedMonths);
   });
 
+  const onDecreaseRepaidAmount = () => {
+    setRepaidAmount(prev => {
+      const newValue = prev === 0 ? 0 : --prev;
+      localStorage.setItem(LOCAL_STORAGE_KEY, newValue.toString());
 
-  const onChangeRepaidAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(event.target.value, 10);
-    setRepaidAmount(newValue);
-    localStorage.setItem(LOCAL_STORAGE_KEY, newValue.toString());
-  };
+      return newValue;
+    })
+  }
+
+  const onIncreaseRepaidAmount = () => {
+    setRepaidAmount(prev => {
+      const newValue = prev === MORTGAGE_MONTH_DURATION ? MORTGAGE_MONTH_DURATION : ++prev;
+      localStorage.setItem(LOCAL_STORAGE_KEY, newValue.toString());
+
+      return newValue;
+    })
+  }
 
   const repaidPercentage = (): number => {
     if (Number.isNaN(repaidAmount)) return 0;
@@ -74,19 +86,15 @@ function App() {
           <p><strong>{elapsedMonths.toFixed(1)}</strong> {elapsedMonths === 1 ? 'month' : 'months'}</p>
         </Tile>
         <Tile title="Repaid">
-          <p className="flex gap-1">
-            <input
-              type="number"
-              step="1"
-              min="0"
-              max={MORTGAGE_MONTH_DURATION}
-              value={repaidAmount}
-              onChange={onChangeRepaidAmount}
-              style={{
-                width: '50px'
-              }}
-            /> {repaidAmount === 1 ? 'month' : 'months'}
-          </p>
+          <div className="flex flex-col justify-center items-center gap-2">
+            <p className="flex gap-1">
+              {repaidAmount} {repaidAmount === 1 ? 'month' : 'months'}
+            </p>
+            <MinusPlusButtons
+              onDecrease={onDecreaseRepaidAmount}
+              onIncrease={onIncreaseRepaidAmount}
+            />
+          </div>
         </Tile>
         <Tile title="Percentage">
           <ProgressDonut className="w-28" repaidPercentage={repaidPercentage()} />
