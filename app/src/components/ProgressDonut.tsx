@@ -5,13 +5,19 @@ interface ProgressDonutProps {
   className?: string;
 }
 
+const formatPercentage = (percentage: number): string => {
+  if (percentage % 1 === 0) return percentage.toFixed(0);
+
+  return percentage.toFixed(2);
+}
+
 export const ProgressDonut = ({ className, repaidPercentage }: ProgressDonutProps): JSX.Element => {
   return (
     <div className={className}>
       <CircularProgressbar
         value={repaidPercentage}
         maxValue={100}
-        text={`${repaidPercentage.toFixed(2)}%`}
+        text={`${formatPercentage(repaidPercentage)}%`}
         styles={{
           // Customize the root svg element
           root: {},
