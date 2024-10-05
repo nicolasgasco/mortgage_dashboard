@@ -87,9 +87,7 @@ function App() {
           </p>
         </Tile>
         <Tile title="Percentage">
-          <div className="w-9/12 mx-auto">
-            <ProgressDonut repaidPercentage={repaidPercentage} />
-          </div>
+          <ProgressDonut className="w-28" repaidPercentage={repaidPercentage} />
         </Tile>
         <Tile title="Remaining">
           <p>
