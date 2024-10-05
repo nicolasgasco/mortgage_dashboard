@@ -10,12 +10,13 @@ import { MinusPlusButtons } from "./components/MinusPlusButtons";
 
 const MILLISECONDS_IN_A_MONTH = 1000 * 60 * 60 * 24 * 30.44; // Average month length in milliseconds
 
-const LOCAL_STORAGE_KEY = "repaid_amount";
+const REPAID_AMOUNT_LS_KEY = "repaid_amount";
+const REEDEM_SPEED_LS_KEY = "reedem_speed";
 
 function App() {
   const elapsedMonths = (Date.now() - MORTGAGE_START_DATE.getTime()) / MILLISECONDS_IN_A_MONTH;
   const [repaidAmount, setRepaidAmount] = useState(() => {
-    const userRepaidAmountRaw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const userRepaidAmountRaw = localStorage.getItem(REPAID_AMOUNT_LS_KEY);
 
     if (userRepaidAmountRaw) {
       return Number(userRepaidAmountRaw);
@@ -23,11 +24,20 @@ function App() {
 
     return Math.ceil(elapsedMonths);
   });
+  const [speed, setSpeed] = useState(() => {
+    const userSpeedRaw = localStorage.getItem(REEDEM_SPEED_LS_KEY);
+
+    if (userSpeedRaw) {
+      return Number(userSpeedRaw);
+    }
+
+    return 1;
+  });
 
   const onDecreaseRepaidAmount = () => {
     setRepaidAmount(prev => {
       const newValue = prev <= elapsedMonths ? 0 : --prev;
-      localStorage.setItem(LOCAL_STORAGE_KEY, newValue.toString());
+      localStorage.setItem(REPAID_AMOUNT_LS_KEY, newValue.toString());
 
       return newValue;
     })
@@ -36,7 +46,26 @@ function App() {
   const onIncreaseRepaidAmount = () => {
     setRepaidAmount(prev => {
       const newValue = prev === MORTGAGE_MONTH_DURATION ? MORTGAGE_MONTH_DURATION : ++prev;
-      localStorage.setItem(LOCAL_STORAGE_KEY, newValue.toString());
+      localStorage.setItem(REPAID_AMOUNT_LS_KEY, newValue.toString());
+
+      return newValue;
+    })
+  }
+
+  const onDecreaseSpeed = () => {
+    setSpeed(prev => {
+      const newValue = prev <= 1 ? 1 : --prev;
+
+      localStorage.setItem(REEDEM_SPEED_LS_KEY, newValue.toString());
+
+      return newValue;
+    })
+  }
+
+  const onIncreaseSpeed = () => {
+    setSpeed(prev => {
+      const newValue = prev >= MORTGAGE_MONTH_DURATION ? MORTGAGE_MONTH_DURATION : ++prev;
+      localStorage.setItem(REEDEM_SPEED_LS_KEY, newValue.toString());
 
       return newValue;
     })
@@ -82,22 +111,16 @@ function App() {
         <Tile title="Total">
           <p><strong>{MORTGAGE_MONTH_DURATION}</strong> months</p>
         </Tile>
+        <Tile title="Started">
+          <p>
+            {MORTGAGE_START_DATE.toLocaleDateString("en-US", {
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+        </Tile>
         <Tile title="Elapsed">
           <p><strong>{elapsedMonths.toFixed(1)}</strong> {elapsedMonths === 1 ? 'month' : 'months'}</p>
-        </Tile>
-        <Tile title="Repaid">
-          <div className="flex flex-col justify-center items-center gap-2">
-            <p className="flex gap-1">
-              {repaidAmount} {repaidAmount === 1 ? 'month' : 'months'}
-            </p>
-            <MinusPlusButtons
-              onDecrease={onDecreaseRepaidAmount}
-              onIncrease={onIncreaseRepaidAmount}
-            />
-          </div>
-        </Tile>
-        <Tile title="Percentage">
-          <ProgressDonut className="w-28" repaidPercentage={repaidPercentage()} />
         </Tile>
         <Tile title="Remaining">
           <p>
@@ -117,8 +140,34 @@ function App() {
             {remainingMonths() === 0 && <span>Repaid in full 🎉</span>}
           </p>
         </Tile>
+        <Tile title="Repaid">
+          <p className="mb-2">
+            {repaidAmount} {repaidAmount === 1 ? 'month' : 'months'}
+          </p>
+          <MinusPlusButtons
+            onDecrease={onDecreaseRepaidAmount}
+            onIncrease={onIncreaseRepaidAmount}
+          />
+        </Tile>
         <Tile title="ETA">
           <p>{estimatedEndDate()}</p>
+        </Tile>
+        <Tile title="Percentage">
+          <ProgressDonut className="w-28" repaidPercentage={repaidPercentage()} />
+        </Tile>
+        <Tile title="Reedem speed">
+          <p className="mb-2">
+            <strong>{speed}</strong>x faster
+          </p>
+          <MinusPlusButtons
+            onDecrease={onDecreaseSpeed}
+            onIncrease={onIncreaseSpeed}
+          />
+        </Tile>
+        <Tile title="Reedem target">
+          <p className="mb-2">
+            {Math.floor(repaidAmount / Math.ceil(elapsedMonths)) >= speed ? 'On track ✅' : 'Lacking ❌'}
+          </p>
         </Tile>
       </div >
     </div>);
