@@ -11,7 +11,7 @@ interface RepaidTileContentProps {
 export const RepaidTileContent = ({ repaidAmount, setRepaidAmount, elapsedMonths }: RepaidTileContentProps) => {
   const onDecreaseRepaidAmount = () => {
     setRepaidAmount(prev => {
-      const newValue = prev <= elapsedMonths ? 0 : --prev;
+      const newValue = prev <= Math.ceil(elapsedMonths) ? Math.ceil(elapsedMonths) : --prev;
       localStorage.setItem(REPAID_AMOUNT_LS_KEY, newValue.toString());
 
       return newValue;

@@ -44,7 +44,7 @@ function App() {
     if (repaidAmount === 0) return MORTGAGE_MONTH_DURATION;
 
     return Math.ceil(
-      (MORTGAGE_MONTH_DURATION - repaidAmount) / (repaidAmount / elapsedMonths)
+      (MORTGAGE_MONTH_DURATION - repaidAmount) / (repaidAmount / Math.ceil(elapsedMonths))
     );
   };
 
