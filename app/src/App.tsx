@@ -9,14 +9,25 @@ import { Tile } from "./components/Tile";
 
 const MILLISECONDS_IN_A_MONTH = 1000 * 60 * 60 * 24 * 30.44; // Average month length in milliseconds
 
+const LOCAL_STORAGE_KEY = "repaid_amount";
+
 function App() {
   const elapsedMonths = (Date.now() - MORTGAGE_START_DATE.getTime()) / MILLISECONDS_IN_A_MONTH;
-  const [repaidAmount, setRepaidAmount] = useState(Math.ceil(elapsedMonths));
+  const [repaidAmount, setRepaidAmount] = useState(() => {
+    const userRepaidAmountRaw = localStorage.getItem(LOCAL_STORAGE_KEY);
+
+    if (userRepaidAmountRaw) {
+      return Number(userRepaidAmountRaw);
+    }
+
+    return Math.ceil(elapsedMonths);
+  });
 
 
   const onChangeRepaidAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(event.target.value, 10);
     setRepaidAmount(newValue);
+    localStorage.setItem(LOCAL_STORAGE_KEY, newValue.toString());
   };
 
   const repaidPercentage = (): number => {
