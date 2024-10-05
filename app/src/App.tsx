@@ -26,7 +26,7 @@ function App() {
 
   const onDecreaseRepaidAmount = () => {
     setRepaidAmount(prev => {
-      const newValue = prev === 0 ? 0 : --prev;
+      const newValue = prev <= elapsedMonths ? 0 : --prev;
       localStorage.setItem(LOCAL_STORAGE_KEY, newValue.toString());
 
       return newValue;
