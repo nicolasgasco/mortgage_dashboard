@@ -4,11 +4,9 @@ import {
   MORTGAGE_MONTH_DURATION,
   MORTGAGE_START_DATE,
 } from "./constants/mortgage";
-import {
-  CircularProgressbar,
-  CircularProgressbarWithChildren,
-  buildStyles,
-} from "react-circular-progressbar";
+import { ProgressDonut } from "./components/ProgressDonut";
+import { Tile } from "./components/Tile";
+
 const MILLISECONDS_IN_A_MONTH = 1000 * 60 * 60 * 24 * 30.44; // Average month length in milliseconds
 const elapsedMonths =
   Math.floor(
@@ -29,9 +27,9 @@ function App() {
     setRepaidAmount(newValue);
   };
 
-  const repaidPercentage = Number.isNaN(repaidAmount)
-    ? (0).toFixed(2)
-    : ((repaidAmount / MORTGAGE_MONTH_DURATION) * 100).toFixed(2);
+  const repaidPercentage: number = Number.isNaN(repaidAmount)
+    ? 0
+    : ((repaidAmount / MORTGAGE_MONTH_DURATION) * 100);
 
   const remainingMonths = () => {
     if (repaidAmount === 0) return MORTGAGE_MONTH_DURATION;
@@ -47,90 +45,74 @@ function App() {
     return result ?? 0;
   };
 
+  const estimatedEndDate = () => {
+    console.log(remainingMonths());
+    const today = new Date();
+    let estimatedEndDate = new Date();
+    estimatedEndDate = new Date(estimatedEndDate.setMonth(today.getMonth() + remainingMonths()));
+
+    console.log(estimatedEndDate.getMonth(), today.getMonth(), estimatedEndDate.getFullYear(), today.getFullYear());
+
+    if (estimatedEndDate.getMonth() === today.getMonth() && estimatedEndDate.getFullYear() && today.getFullYear()) return "This month 🥳";
+
+    return estimatedEndDate.toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+  }
+
   return (
     <>
-      <h1>Mortgage end calculator</h1>
-      <p>
-        Your mortgage started on <strong>{formattedStartDate}</strong> and it
-        amounts to <strong>{MORTGAGE_MONTH_DURATION}</strong> installments.
-      </p>
-      <label>
-        Insert the number of months you have repaid:
-        <input
-          type="number"
-          step="1"
-          min="0"
-          max={MORTGAGE_MONTH_DURATION}
-          value={repaidAmount}
-          onChange={onChangeRepaidAmount}
-        />
-      </label>
-      <p>
-        You repaid{" "}
-        <strong>{Number.isNaN(repaidAmount) ? 0 : repaidAmount}</strong> months,
-        which constitutes <strong>{repaidPercentage}</strong>% of your mortage.
-      </p>
-      <div style={{ width: 200, height: 200 }}>
-        <CircularProgressbar
-          value={+repaidPercentage}
-          maxValue={100}
-          text={`${repaidPercentage}%`}
-          styles={{
-            // Customize the root svg element
-            root: {},
-            // Customize the path, i.e. the "completed progress"
-            path: {
-              // Path color
-              stroke: `rgba(62, 152, 199, ${repaidPercentage / 100})`,
-              // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-              strokeLinecap: "butt",
-              // Customize transition animation
-              transition: "stroke-dashoffset 0.5s ease 0s",
-              // Rotate the path
-              transform: "rotate(0.25turn)",
-              transformOrigin: "center center",
-            },
-            // Customize the circle behind the path, i.e. the "total progress"
-            trail: {
-              // Trail color
-              stroke: "#d6d6d6",
-              // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-              strokeLinecap: "butt",
-              // Rotate the trail
-              transform: "rotate(0.25turn)",
-              transformOrigin: "center center",
-            },
-            // Customize the text
-            text: {
-              // Text color
-              fill: "#f88",
-              // Text size
-              fontSize: "16px",
-            },
-            // Customize background - only used when the `background` prop is true
-            background: {
-              fill: "#3e98c7",
-            },
-          }}
-        />
-      </div>
-      ;
-      <p>
-        Taken into account that <strong>{elapsedMonths}</strong> months have
-        elapsed since mortgage start, your mortgage is estimated to be repaid in{" "}
-        {remainingYears() > 0 && (
-          <span>
-            <strong>{remainingYears()}</strong> years
-          </span>
-        )}
-        {remainingMonths() % 12 !== 0 && " and "}
-        {remainingMonths() % 12 > 0 && (
-          <span>
-            <strong>{remainingMonths() % 12}</strong> months
-          </span>
-        )}
-        .
-      </p>
+      <h1 className="mb-12 font-bold">Mortgage dashboard</h1>
+      <div className="grid grid-cols-3 grid-rows-2 gap-y-3 gap-x-4">
+        <Tile title="Total">
+          <p><strong>{MORTGAGE_MONTH_DURATION}</strong> months</p>
+        </Tile>
+        <Tile title="Elapsed">
+          <p><strong>{elapsedMonths}</strong> {elapsedMonths === 1 ? 'month' : 'months'}</p>
+        </Tile>
+        <Tile title="Repaid">
+          <p className="flex gap-1">
+            <input
+              type="number"
+              step="1"
+              min="0"
+              max={MORTGAGE_MONTH_DURATION}
+              value={repaidAmount}
+              onChange={onChangeRepaidAmount}
+              style={{
+                width: '50px'
+              }}
+            /> {repaidAmount === 1 ? 'month' : 'months'}
+          </p>
+        </Tile>
+        <Tile title="Percentage">
+          <div className="w-9/12 mx-auto">
+            <ProgressDonut repaidPercentage={repaidPercentage} />
+          </div>
+        </Tile>
+        <Tile title="Remaining">
+          <p>
+            {remainingYears() > 0 && (
+              <>
+                <span>
+                  <strong>{remainingYears()}</strong> years
+                </span>
+                <br />
+              </>
+            )}
+            {remainingMonths() % 12 > 0 && (
+              <span>
+                <strong>{remainingMonths() % 12}</strong> months
+              </span>
+            )}
+            {remainingMonths() === 0 && <span>Repaid in full 🎉</span>}
+          </p>
+        </Tile>
+        <Tile title="ETA">
+          <p>{estimatedEndDate()}</p>
+        </Tile>
+      </div >
     </>
   );
 }
