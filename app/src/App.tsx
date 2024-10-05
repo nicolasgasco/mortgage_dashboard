@@ -64,9 +64,9 @@ function App() {
   }
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center">
       <h1 className="mb-12 font-bold">Mortgage dashboard</h1>
-      <div className="grid grid-cols-3 grid-rows-2 gap-y-3 gap-x-4">
+      <div className="w-full sm:w-auto grid grid-flow-row sm:grid-cols-3 sm:grid-rows-2 gap-y-3 gap-x-4">
         <Tile title="Total">
           <p><strong>{MORTGAGE_MONTH_DURATION}</strong> months</p>
         </Tile>
@@ -113,8 +113,7 @@ function App() {
           <p>{estimatedEndDate()}</p>
         </Tile>
       </div >
-    </>
-  );
+    </div>);
 }
 
 export default App;
