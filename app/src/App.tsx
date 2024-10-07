@@ -14,6 +14,7 @@ import { TargetTileContent } from "./components/TargetTileContent";
 import { StartedTileContent } from "./components/StartedTileContent";
 import { ElapsedTileContent } from "./components/ElapsedTileContent";
 import { TotalTileContent } from "./components/TotalTileContent";
+import { CurrentTileContent } from "./components/CurrentTileContent";
 
 const MILLISECONDS_IN_A_MONTH = 1000 * 60 * 60 * 24 * 30.44; // Average month length in milliseconds
 
@@ -77,10 +78,13 @@ function App() {
         <Tile title="Percentage">
           <PercentageTileContent repaidAmount={repaidAmount} />
         </Tile>
-        <Tile title="Redeem speed">
+        <Tile title="Speed">
           <RedeemTileContent speed={speed} setSpeed={setSpeed} />
         </Tile>
-        <Tile title="Redeem target">
+        <Tile title="Current">
+          <CurrentTileContent repaidAmount={repaidAmount} elapsedMonths={elapsedMonths} />
+        </Tile>
+        <Tile title="Target">
           <TargetTileContent repaidAmount={repaidAmount} elapsedMonths={elapsedMonths} speed={speed} />
         </Tile>
       </div >
