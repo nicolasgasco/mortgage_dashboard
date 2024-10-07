@@ -15,6 +15,7 @@ import { StartedTileContent } from "./components/StartedTileContent";
 import { ElapsedTileContent } from "./components/ElapsedTileContent";
 import { TotalTileContent } from "./components/TotalTileContent";
 import { CurrentTileContent } from "./components/CurrentTileContent";
+import { Section } from "./components/Section";
 
 const MILLISECONDS_IN_A_MONTH = 1000 * 60 * 60 * 24 * 30.44; // Average month length in milliseconds
 
@@ -59,34 +60,40 @@ function App() {
   return (
     <div className="flex flex-col items-center justify-center">
       <h1 className="mb-12 font-bold">Mortgage dashboard</h1>
-      <div className="w-full sm:w-auto grid grid-flow-row sm:grid-cols-3 sm:grid-rows-2 gap-y-3 gap-x-4">
-        <Tile title="Total">
-          <TotalTileContent />
-        </Tile>
-        <Tile title="Started">
-          <StartedTileContent />
-        </Tile>
-        <Tile title="Elapsed">
-          <ElapsedTileContent elapsedMonths={elapsedMonths} />
-        </Tile>
-        <Tile title="Repaid">
-          <RepaidTileContent repaidAmount={repaidAmount} setRepaidAmount={setRepaidAmount} elapsedMonths={elapsedMonths} />
-        </Tile>
-        <Tile title="Remaining">
-          <RemainingTileContent remainingYears={remainingYears()} remainingMonths={remainingMonths()} />
-        </Tile>
-        <Tile title="Percentage">
-          <PercentageTileContent repaidAmount={repaidAmount} />
-        </Tile>
-        <Tile title="Speed">
-          <RedeemTileContent speed={speed} setSpeed={setSpeed} />
-        </Tile>
-        <Tile title="Current">
-          <CurrentTileContent repaidAmount={repaidAmount} elapsedMonths={elapsedMonths} />
-        </Tile>
-        <Tile title="Target">
-          <TargetTileContent repaidAmount={repaidAmount} elapsedMonths={elapsedMonths} speed={speed} />
-        </Tile>
+      <div className="w-full sm:w-auto flex flex-col gap-4">
+        <Section title="Overview">
+          <Tile title="Total">
+            <TotalTileContent />
+          </Tile>
+          <Tile title="Started">
+            <StartedTileContent />
+          </Tile>
+          <Tile title="Elapsed">
+            <ElapsedTileContent elapsedMonths={elapsedMonths} />
+          </Tile>
+        </Section>
+        <Section title="Progress">
+          <Tile title="Repaid">
+            <RepaidTileContent repaidAmount={repaidAmount} setRepaidAmount={setRepaidAmount} elapsedMonths={elapsedMonths} />
+          </Tile>
+          <Tile title="Remaining">
+            <RemainingTileContent remainingYears={remainingYears()} remainingMonths={remainingMonths()} />
+          </Tile>
+          <Tile title="Percentage">
+            <PercentageTileContent repaidAmount={repaidAmount} />
+          </Tile>
+        </Section>
+        <Section title="Redeem">
+          <Tile title="Speed">
+            <RedeemTileContent speed={speed} setSpeed={setSpeed} />
+          </Tile>
+          <Tile title="Current">
+            <CurrentTileContent repaidAmount={repaidAmount} elapsedMonths={elapsedMonths} />
+          </Tile>
+          <Tile title="Target">
+            <TargetTileContent repaidAmount={repaidAmount} elapsedMonths={elapsedMonths} speed={speed} />
+          </Tile>
+        </Section>
       </div >
     </div>);
 }
