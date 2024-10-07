@@ -59,7 +59,7 @@ function App() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <h1 className="mb-12 font-bold">Mortgage dashboard</h1>
+      <h1 className="mb-12 font-bold text-2xl sm:text-4xl">Mortgage dashboard</h1>
       <div className="w-full sm:w-auto flex flex-col gap-4">
         <Section title="Overview">
           <Tile title="Total">
